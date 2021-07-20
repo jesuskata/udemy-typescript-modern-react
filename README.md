@@ -1,70 +1,135 @@
-# Getting Started with Create React App
+# TypeScript con React moderno
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Este es un repo dirigido a dejar los apuntes para el curso de _Udemy: TypeScript with Modern React de Richard Oliver Bray_.
 
-## Available Scripts
+## Agregando TypeScript a un proyecto hecho con CRA
 
-In the project directory, you can run:
+- Crea un proyecto de React con CRA:
 
-### `yarn start`
+```bash
+npx create-react-app <my-react-project-name>
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Ya instalado, es necesario agregar algunas librerías adicionales:
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+```bash
+yarn add typescript @types/node @types/react @types/react-dom
+```
 
-### `yarn test`
+- Crea un proyecto de React con TypeScript, usando Webpack
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Comenzamos creando la carpeta y moviéndonos a la recién creada:
 
-### `yarn build`
+```bash
+mkdir react-ts-webpack
+cd react-ts-webpack
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Iniciamos un proyecto de Node:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```bash
+npm init -y
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Creamos nuestro directorio `src` y los archivos de inicialización del proyecto y de configuración:
 
-### `yarn eject`
+```bash
+mkdir src
+touch src/index.tsx
+touch index.html webpack.config.js .babelrc
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+En el `index.html` creamos nuestro id para la app de react:
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```html
+<body>
+    <div id="app-root"></div>
+    <script src="bundle.js"></script>
+</body>
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+Trabajamos sobre nuestro archivo `index.tsx` en `src`:
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+```tsx
+import React from 'react';
+import ReactDOM from 'react-dom';
 
-## Learn More
+export default function App(): JSX.Element {
+    return (
+        <h1>Hello</h1>
+    )
+}
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+const root = document.getElementById('app-root');
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+ReactDOM.render(<App />, root);
+```
 
-### Code Splitting
+Trabajamos ahora en nuestro archivo de configuración de webpack `webpack.config.js`:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+```js
+const path = require('path');
+const rules = [
+    {
+        test: /\.tsx?/,
+        exclude: /node_modules/,
+        loader: 'babel-loader'
+    }
+]
 
-### Analyzing the Bundle Size
+module.exports = {
+    target: 'web',
+    mode: 'development',
+    entry: 'src/index.tsx',
+    output: {
+        path: path.resolve(__dirname, 'build'),
+        filename: 'bundle.js'
+    },
+    module: { rules },
+    resolve: { extensions: ['ts', 'tsx', 'js'] },
+    devServer: {
+        contentBase: './',
+        port: 5000
+    }
+}
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+Pasa el turno a nuestro archivo de configuración de babel `.babelrc`:
 
-### Making a Progressive Web App
+```json
+{
+    "presets": ["@babel/env", "@babel/react", "@babel/typescript"]
+}
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+Hacemos unas modificaciones a nuestro archivo `package.json`:
 
-### Advanced Configuration
+```json
+{
+    "scripts": {
+        "start": "webpack-dev-server --open",
+        "build": "webpack"
+    }
+}
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+Ahora instalamos las dependencias que hacen falta:
 
-### Deployment
+```bash
+npm install @babel/core @babel/preset-env @babel/preset-react @babel/preset-typescript webpack webpack-cli webpack-dev-server babel-loader react react-dom @types/react @types/react-dom
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+Ya podemos correr nuestro proyecto:
 
-### `yarn build` fails to minify
+```bash
+npm run start
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Hacemos las pruebas de TS:
+
+```tsx
+// Agregamos esto al declarar el componente APP
+function sum(a: number, b: number): number {
+    return a + b;
+}
+```
